@@ -2,9 +2,9 @@
 description: Primary agent for spec-driven development - designs features through requirements, design, and tasks stages before implementation. Can also handle bug fixes using a bug-report workflow.
 mode: primary
 permission:
-  edit: ask
-  bash: ask
-  webfetch: ask
+  edit: allow
+  bash: allow
+  webfetch: allow
 tools:
   todowrite: false
   todoread: false
