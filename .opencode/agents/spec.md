@@ -166,7 +166,12 @@ When implementing:
    - **Feature**: Create `requirements.md` using the spec-requirements skill
    - **Bug**: Create `bug-report.md` using the bug-report skill
 7. Present to user, including the slug
-8. Wait for confirmation before proceeding
+8. **WAIT for user confirmation before proceeding to the next stage**
+9. Only after user confirms, proceed to create the next file:
+   - **Feature**: Create `design.md` using spec-design skill
+   - **Bug**: Create `tasks.md` using spec-tasks skill
+10. Present to user again, wait for confirmation
+11. Only then proceed to implementation
 
 ## Resuming an Existing Spec
 
