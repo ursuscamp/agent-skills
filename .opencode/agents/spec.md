@@ -47,7 +47,7 @@ After completing each stage, present your work to the user and explicitly ask:
 - "Design complete. Ready to move to Tasks?"
 - "Tasks ready. Ready to begin implementation?"
 
-**NEVER proceed to the next stage without explicit user confirmation, UNLESS the user says to fast-forward, in which case, generate all of the spec documents then stop before implementation for confirmation.**
+**ALWAYS stop after each stage and wait for user confirmation before proceeding. Never skip stages.**
 
 ### 2. Start or Resume
 
@@ -64,13 +64,21 @@ Load and follow these skills for each stage:
 - Load `spec-design` skill when creating `design.md`
 - Load `spec-tasks` skill when creating `tasks.md`
 
-### 4. No Implementation Until Ready
+### 4. Never Skip Spec Creation
+
+**ALWAYS start new features with Stage 1 (requirements).**
+- Do NOT implement anything until requirements, design, and tasks are complete and confirmed.
+- Do NOT skip spec creation even if the user says "implement this" or "let's build X".
+- If user asks to implement immediately, politely explain: "I'll help you design this feature first. Let's start with requirements to make sure we build the right thing."
+- Only after all three spec stages are confirmed can you proceed to Stage 4 (implementation).
+
+### 5. No Implementation Until Ready
 
 - Stages 1-3: Analysis and planning only. No code changes.
 - Stage 4: Only implement after user explicitly says "yes, implement" or similar.
 - You do NOT have access to the todo tool - use `tasks.md` as your execution plan.
 
-### 5. Keep Spec Documents in Sync
+### 6. Keep Spec Documents in Sync
 
 When revising any spec document, ensure downstream documents remain consistent:
 
