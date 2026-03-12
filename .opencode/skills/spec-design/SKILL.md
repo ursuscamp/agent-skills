@@ -5,7 +5,7 @@ description: Defines the format and structure for technical design documentation
 
 ## What I do
 
-When you create or update a `design.md` file for a feature specification, follow this exact structure. This skill ensures designs are thorough, implementable, and consider cross-cutting concerns.
+When you create or update a `design.md` file for a feature specification, follow this exact structure. This skill ensures designs are thorough, implementable, and consider cross-cutting concerns. Adapt the terminology to fit your project type (API, CLI, library, embedded system, etc.).
 
 ## Required Sections
 
@@ -23,39 +23,46 @@ High-level description of how this feature fits into the system. Include:
 - Component diagram description (if applicable)
 - Data flow summary
 - Key architectural decisions
+- How this feature interacts with existing system parts
 
-### 3. API Design
+### 3. Interface Design
 
-Table format for all endpoints:
+Document how this feature exposes its functionality:
 
-| Method | Path | Request Body | Response | Description |
-|--------|------|--------------|----------|-------------|
-| POST | /api/users | `{ "name": "string" }` | `{ "id": "uuid" }` | Create a user |
+| Interface | Input | Output | Description |
+|-----------|-------|--------|-------------|
+| createUser | `{ name, email }` | `{ id, created }` | Creates a new user |
+| deleteUser | `id: UUID` | `{ success }` | Deletes a user by ID |
 
 Include:
-- HTTP methods and paths
-- Request/response schemas (JSON)
-- Query parameters
-- HTTP status codes
-- Error responses
+- Function/method signatures
+- Command syntax (for CLI tools)
+- Protocol messages (for IPC/networking)
+- Request/response formats
+- Parameter types and constraints
 
 ### 4. Data Models
 
-#### Database Schema
-
-Table format for tables/collections:
+Document the data structures this feature uses:
 
 | Field | Type | Constraints | Description |
 |-------|------|-------------|-------------|
 | id | UUID | PK, auto-generated | Unique identifier |
-| name | VARCHAR(255) | NOT NULL | User's display name |
-| created_at | TIMESTAMP | NOT NULL, DEFAULT NOW() | Creation timestamp |
+| name | String | NOT NULL, max 255 | Display name |
+| createdAt | DateTime | NOT NULL | Creation timestamp |
+
+Apply this to:
+- Database schemas
+- Configuration files
+- Message formats
+- Structs/classes
+- File formats
 
 #### Schema Changes
 
 If modifying existing models:
 - New fields added
-- Fields modified (migration needed)
+- Fields modified (migration/conversion needed)
 - Fields deprecated
 
 ### 5. Key Components
@@ -63,117 +70,175 @@ If modifying existing models:
 Describe each major component/module:
 
 ```markdown
-### AuthService
+### UserService
 
 **Responsibilities:**
-- User authentication
-- Token generation and validation
-- Session management
+- User lifecycle management
+- User data validation
+- Event publishing on user actions
 
 **Public API:**
-- `authenticate(credentials: Credentials): Promise<AuthToken>`
-- `validateToken(token: string): Promise<User>`
-- `revokeToken(token: string): Promise<void>`
+- `create(input: CreateUserInput): Promise<User>`
+- `findById(id: string): Promise<User | null>`
+- `delete(id: string): Promise<void>`
 
 **Dependencies:**
 - UserRepository
-- JWT library
+- EventBus
+- Validator
 ```
 
-### 6. User Interface
+### 6. User Interaction
 
-Describe UI/UX design:
+Describe how users interact with this feature:
 
-#### Layout Structure
-- Page sections
-- Navigation flow
-- Responsive breakpoints
+#### Invocation Patterns
+- Direct function call
+- Command-line command
+- API/RPC call
+- Message/event consumption
+- UI interaction
 
-#### User Flows
+#### Flows
 - Step-by-step interaction sequence
-- User actions and system responses
-- Error states and recovery
+- Input sources and destinations
+- Error states and recovery paths
 
-#### Visual Design (if applicable)
-- Component library to use
-- Styling approach
-- Accessibility requirements
+#### Input/Output Examples
+```markdown
+# CLI example
+$ myapp user create --name "John" --email "john@example.com"
+Created user: 550e8400-e29b-41d4-a716-446655440000
+
+# API example
+$ curl -X POST /users -d '{"name": "John"}'
+{"id": "550e8400-e29b-41d4-a716-446655440000"}
+```
 
 ### 7. External Dependencies
 
 | Dependency | Purpose | Version/Notes |
 |------------|---------|---------------|
-| Stripe API | Payment processing | v3 API |
-| SendGrid | Email delivery | Transactional only |
+| database | Persistent storage | PostgreSQL 14+ |
+| cache | Fast access storage | Redis 6+ |
+| logger | Structured logging | Winston |
+| auth-provider | Authentication | OAuth 2.0 |
 
 Include:
-- Third-party services
-- External APIs
+- External services
 - Libraries/packages
+- System resources (filesystem, network, etc.)
 
 ### 8. Error Handling
 
-| Error Code | Condition | Response | User Message |
-|------------|-----------|----------|--------------|
-| 400 | Invalid input | `{ "error": "VALIDATION_ERROR", "details": [...] }` | "Please check your input" |
-| 401 | Unauthorized | `{ "error": "UNAUTHORIZED" }` | "Please log in" |
-| 404 | Not found | `{ "error": "NOT_FOUND", "resource": "user" }` | "User not found" |
-| 500 | Server error | `{ "error": "INTERNAL_ERROR" }` | "Something went wrong" |
+| Error Code | Condition | Error Data | Recovery |
+|------------|-----------|------------|----------|
+| INVALID_INPUT | Input validation fails | `{ field, message }` | Show error, request valid input |
+| NOT_FOUND | Resource doesn't exist | `{ resource, id }` | Return empty, prompt to create |
+| CONFLICT | Resource already exists | `{ resource, identifier }` | Offer to update existing |
+| UNAUTHORIZED | Missing permissions | `{ action }` | Redirect to auth |
+| UNAVAILABLE | Service unavailable | `{ service }` | Retry with backoff |
 
 Include:
-- HTTP status codes
-- Error response schemas
-- Client-side error handling
-- Retry logic
+- Error types and codes
+- Error payloads
+- Recovery strategies
+- Logging requirements
 
 ### 9. Security
 
 | Concern | Approach |
 |---------|----------|
-| Authentication | JWT tokens with 1hr expiry |
-| Authorization | Role-based: admin, user |
-| Data at rest | AES-256 encryption |
-| Data in transit | TLS 1.3 |
-| Input validation | Zod schemas |
-| Rate limiting | 100 req/min per user |
+| Authentication | Verify caller identity |
+| Authorization | Check permissions before action |
+| Input Sanitization | Validate and sanitize all inputs |
+| Secrets | Never log sensitive data |
+| Access Control | Principle of least privilege |
+
+Tailor to your system:
+- For APIs: token-based auth, rate limiting
+- For libraries: input validation, safe defaults
+- For CLI: secure storage for credentials
+- For systems: resource limits, isolation
 
 ### 10. Configuration
 
-Environment variables or config keys needed:
+Configuration options this feature needs:
 
 | Key | Type | Required | Default | Description |
 |-----|------|----------|---------|-------------|
-| STRIPE_API_KEY | string | yes | - | Stripe secret key |
-| WEBHOOK_SECRET | string | yes | - | Webhook verification |
+| timeout | number | no | 5000 | Operation timeout in ms |
+| maxRetries | number | no | 3 | Maximum retry attempts |
+| connectionString | string | yes | - | Database connection |
 
-### 11. Trade-offs
+Include:
+- Environment variables
+- Config file options
+- Runtime flags
+- Secrets management approach
+
+### 11. Component Interactions
+
+How components communicate:
+
+```markdown
+# Synchronous (function calls)
+UserController → UserService → UserRepository → Database
+
+# Asynchronous (events/messages)
+UserService → EventBus → NotificationService → EmailProvider
+```
+
+Include:
+- Call flow diagrams (text-based)
+- Message formats for async communication
+- Protocol choices (REST, gRPC, message queue, events)
+- Timeout and retry expectations
+
+### 12. Platform Considerations
+
+If this feature runs on multiple platforms:
+
+| Platform | Consideration | Approach |
+|----------|---------------|----------|
+| Linux | File paths | Use XDG dirs |
+| macOS | File paths | Use ~/Library |
+| Windows | File paths | Use AppData |
+
+- Path conventions
+- Platform-specific dependencies
+- Conditional code paths
+
+### 13. Trade-offs
 
 Document architectural decisions and trade-offs:
 
 ```markdown
-**Decision**: Use polling instead of WebSockets for real-time updates
+**Decision**: Use synchronous processing over async
 
 **Reasoning**: 
-- Team has limited WebSocket experience
-- Lower traffic expected (< 100 updates/min)
-- Simpler deployment (no sticky sessions)
+- Simpler to reason about and debug
+- Lower latency for user-facing operations
+- Team has less experience with async patterns
 
 **Impact**: 
-- Max 5-second delay in updates
-- Higher server load at scale
+- May struggle with high-throughput scenarios
+- Can scale vertically before needing horizontal scaling
 ```
 
-### 12. Risks and Mitigations
+### 14. Risks and Mitigations
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|-------------|
-| Third-party API downtime | Medium | High | Implement circuit breaker, fallback to cached data |
-| Database migration locks table | Low | High | Use online migration tool, schedule maintenance window |
+| External service failure | Medium | High | Circuit breaker, fallback to cached/default |
+| Data migration complexity | Low | High | Automated migration scripts, rollback plan |
+| Performance at scale | Medium | Medium | Load testing, monitoring, capacity planning |
 
 ## Quality Guidelines
 
 1. **Be implementable** - A fellow developer should be able to build from this
-2. **Cover edge cases** - Error states, race conditions, edge cases
-3. **Be specific** - Use actual field names, paths, values
+2. **Cover edge cases** - Error states, race conditions, boundary conditions
+3. **Be specific** - Use actual field names, types, values
 4. **Document rationale** - Don't just say what, say why
 5. **Consider testing** - Include test strategy per component
+6. **Adapt to context** - Use appropriate terminology for your project type

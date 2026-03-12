@@ -1,10 +1,6 @@
 ---
 name: spec-tasks
 description: Defines the format for implementation task checklists in spec-driven development
-compatibility: opencode
-metadata:
-  audience: developers
-  workflow: spec-driven-development
 ---
 
 ## What I do
