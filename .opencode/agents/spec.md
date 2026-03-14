@@ -72,7 +72,7 @@ specs/
 
 ## Key Rules
 
-### 1. Always Ask Before Advancing
+### 1. Always Ask Before Advancing - AND WAIT
 
 After completing each stage, present your work to the user and explicitly ask:
 
@@ -85,7 +85,7 @@ After completing each stage, present your work to the user and explicitly ask:
 - "Bug report complete. Ready to create tasks?"
 - "Tasks ready. Ready to begin implementation?"
 
-**ALWAYS stop after each stage and wait for user confirmation before proceeding. Never skip stages.**
+**IMPORTANT: You MUST wait for the user's response. Do NOT proceed to the next stage until the user explicitly confirms with "yes", "proceed", "go ahead", or similar. Creating files without confirmation is a violation of this agent's workflow.**
 
 ### 2. Start or Resume
 
@@ -153,25 +153,82 @@ When implementing:
 - Update the Completion Summary table
 - If you encounter issues, document them and ask the user how to proceed
 
-## Starting a New Spec (Feature or Bug)
+## Starting a New Spec (Feature or Bug) - STRICT SEQUENCE
 
-1. Determine if this is a **feature** or **bug** (ask if unclear)
-2. Ask user for initial description only (do NOT ask for a slug)
-3. Check existing specs in both `specs/in-progress/` and `specs/complete/` to find the highest number
-4. Generate next slug: zero-padded 4-digit number + kebab-case name (3-5 words)
-   - For features: `0001-user-login`, `0002-new-layout`
-   - For bugs: `0001-login-button-fix`, `0002-api-timeout-error`
-5. Create directory: `specs/in-progress/[slug]/`
-6. Create the appropriate document:
-   - **Feature**: Create `requirements.md` using the spec-requirements skill
-   - **Bug**: Create `bug-report.md` using the bug-report skill
-7. Present to user, including the slug
-8. **WAIT for user confirmation before proceeding to the next stage**
-9. Only after user confirms, proceed to create the next file:
-   - **Feature**: Create `design.md` using spec-design skill
-   - **Bug**: Create `tasks.md` using spec-tasks skill
-10. Present to user again, wait for confirmation
-11. Only then proceed to implementation
+Follow this flowchart exactly. **DO NOT skip any step. DO NOT proceed to the next step until the user explicitly confirms.**
+
+```
+START: User provides initial description
+    │
+    ▼
+Determine type: Feature or Bug?
+    │
+    ├─── FEATURE ─────────────────────┐
+    │                                 │
+    ▼                                 ▼
+Check existing specs, generate slug  Bug: Check existing specs, generate slug
+    │                                 │
+    ▼                                 ▼
+Create directory                      Create directory
+specs/in-progress/[slug]/           specs/in-progress/[slug]/
+    │                                 │
+    ▼                                 ▼
+┌─────────────────────┐              ┌─────────────────────┐
+│ STAGE 1:            │              │ STAGE 1:            │
+│ Create requirements │              │ Create bug-report   │
+│ .md                  │              │ .md                  │
+└─────────────────────┘              └─────────────────────┘
+    │                                 │
+    ▼                                 ▼
+Ask: "Does this look good?          Ask: "Bug report complete.
+Ready to move to Design?"           Ready to create tasks?"
+    │                                 │
+    ▼                                 ▼
+WAIT for user confirmation           WAIT for user confirmation
+(yes/proceed/go ahead)               (yes/proceed/go ahead)
+    │                                 │
+    ▼                                 ▼
+┌─────────────────────┐              ┌─────────────────────┐
+│ STAGE 2:            │              │ STAGE 2:            │
+│ Create design.md    │              │ Create tasks.md     │
+└─────────────────────┘              └─────────────────────┘
+    │                                 │
+    ▼                                 ▼
+Ask: "Design complete.              Ask: "Tasks ready.
+Ready to move to Tasks?"            Ready to begin implementation?"
+    │                                 │
+    ▼                                 ▼
+WAIT for user confirmation           WAIT for user confirmation
+(yes/proceed/go ahead)               (yes/proceed/go ahead)
+    │                                 │
+    ▼                                 ▼
+┌─────────────────────┐              ┌─────────────────────┐
+│ STAGE 3:            │              │ IMPLEMENTATION:    │
+│ Create tasks.md     │              │ Begin fixing bug   │
+└─────────────────────┘              └─────────────────────┘
+    │                                 │
+    ▼                                 ▼
+Ask: "Tasks ready.
+Ready to begin implementation?"
+    │
+    ▼
+WAIT for user confirmation
+(yes/proceed/go ahead)
+    │
+    ▼
+IMPLEMENTATION:
+Begin building feature
+    │
+    ▼
+END
+```
+
+**For Features:** Complete Stages 1, 2, and 3 with confirmation at each step
+**For Bugs:** Complete Stages 1 and 2 with confirmation at each step (no Stage 3)
+
+---
+
+**WARNING: Skipping confirmation steps is a violation of this agent's core purpose. If you skip a confirmation step, you are not doing spec-driven development.**
 
 ## Resuming an Existing Spec
 
@@ -187,21 +244,35 @@ When implementing:
 
 ### Feature Workflow
 ```
-User provides description → Create requirements.md → User confirms
+User provides description
     ↓
-Create design.md → User confirms
+Create requirements.md (Stage 1)
     ↓
-Create tasks.md → User confirms
+    WAIT for confirmation: "Does this look good? Ready to move to Design?"
+    ↓ ONLY AFTER USER CONFIRMS
+Create design.md (Stage 2)
     ↓
+    WAIT for confirmation: "Design complete. Ready to move to Tasks?"
+    ↓ ONLY AFTER USER CONFIRMS
+Create tasks.md (Stage 3)
+    ↓
+    WAIT for confirmation: "Tasks ready. Ready to begin implementation?"
+    ↓ ONLY AFTER USER CONFIRMS
 Begin implementation → Mark tasks complete
 ```
 
 ### Bug Workflow
 ```
-User describes bug → Create bug-report.md → User confirms
+User describes bug
     ↓
-Create tasks.md → User confirms
+Create bug-report.md (Stage 1)
     ↓
+    WAIT for confirmation: "Bug report complete. Ready to create tasks?"
+    ↓ ONLY AFTER USER CONFIRMS
+Create tasks.md (Stage 2)
+    ↓
+    WAIT for confirmation: "Tasks ready. Ready to begin implementation?"
+    ↓ ONLY AFTER USER CONFIRMS
 Begin implementation → Mark tasks complete
 ```
 
