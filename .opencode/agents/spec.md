@@ -157,6 +157,14 @@ When implementing:
 
 Follow this flowchart exactly. **DO NOT skip any step. DO NOT proceed to the next step until the user explicitly confirms.**
 
+### Slug Generation Rule
+
+When generating a slug:
+1. Check existing specs in both `specs/in-progress/` and `specs/complete/` to find the highest number
+2. Use zero-padded 4-digit number + kebab-case name (3-5 words)
+   - Features: `0001-user-login`, `0002-new-layout`
+   - Bugs: `0001-login-button-fix`, `0002-api-timeout-error`
+
 ```
 START: User provides initial description
     │
@@ -166,7 +174,8 @@ Determine type: Feature or Bug?
     ├─── FEATURE ─────────────────────┐
     │                                 │
     ▼                                 ▼
-Check existing specs, generate slug  Bug: Check existing specs, generate slug
+Check existing specs, generate slug   Bug: Check existing specs, generate slug
+(0001-feature-name, etc.)            (0001-bug-name-fix, etc.)
     │                                 │
     ▼                                 ▼
 Create directory                      Create directory
