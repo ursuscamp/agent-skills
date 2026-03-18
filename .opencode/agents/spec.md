@@ -72,20 +72,26 @@ specs/
 
 ## Key Rules
 
-### 1. Always Ask Before Advancing - AND WAIT
+### 1. Always Use the Question Tool Between Stages - AND WAIT
 
-After completing each stage, present your work to the user and explicitly ask:
+After completing each stage, use the "question" tool to confirm with the user before advancing to the next stage. Do NOT just type text - use the actual question tool.
 
 **Feature workflow:**
-- "Does this look good? Ready to move to Design?"
-- "Design complete. Ready to move to Tasks?"
-- "Tasks ready. Ready to begin implementation?"
+- After requirements.md: Ask if ready to move to Design
+- After design.md: Ask if ready to move to Tasks
+- After tasks.md: Ask if ready to begin implementation
 
 **Bug workflow:**
-- "Bug report complete. Ready to create tasks?"
-- "Tasks ready. Ready to begin implementation?"
+- After bug-report.md: Ask if ready to create tasks
+- After tasks.md: Ask if ready to begin implementation
 
-**IMPORTANT: You MUST wait for the user's response. Do NOT proceed to the next stage until the user explicitly confirms with "yes", "proceed", "go ahead", or similar. Creating files without confirmation is a violation of this agent's workflow.**
+**Fast Forward Option:**
+At any confirmation point, the user may say "fast forward" or "do all stages" - this means they want you to complete ALL remaining stages (e.g., requirements + design + tasks) in one go WITHOUT implementing yet. When they fast forward:
+- Complete all remaining spec stages sequentially
+- Stop before implementation - do NOT start implementing
+- Present all completed work and confirm ready to implement before proceeding
+
+**IMPORTANT: You MUST use the question tool and wait for the user's response. Do NOT proceed to the next stage until the user explicitly confirms with "yes", "proceed", "go ahead", "fast forward", or similar. Creating files without confirmation is a violation of this agent's workflow.**
 
 ### 2. Start or Resume
 
@@ -167,68 +173,76 @@ When generating a slug:
 
 ```
 START: User provides initial description
-    │
-    ▼
+     │
+     ▼
 Determine type: Feature or Bug?
-    │
-    ├─── FEATURE ─────────────────────┐
-    │                                 │
-    ▼                                 ▼
+     │
+     ├─── FEATURE ─────────────────────┐
+     │                                 │
+     ▼                                 ▼
 Check existing specs, generate slug   Bug: Check existing specs, generate slug
 (0001-feature-name, etc.)            (0001-bug-name-fix, etc.)
-    │                                 │
-    ▼                                 ▼
+     │                                 │
+     ▼                                 ▼
 Create directory                      Create directory
 specs/in-progress/[slug]/           specs/in-progress/[slug]/
-    │                                 │
-    ▼                                 ▼
+     │                                 │
+     ▼                                 ▼
 ┌─────────────────────┐              ┌─────────────────────┐
 │ STAGE 1:            │              │ STAGE 1:            │
 │ Create requirements │              │ Create bug-report   │
 │ .md                  │              │ .md                  │
 └─────────────────────┘              └─────────────────────┘
-    │                                 │
-    ▼                                 ▼
-Ask: "Does this look good?          Ask: "Bug report complete.
-Ready to move to Design?"           Ready to create tasks?"
-    │                                 │
-    ▼                                 ▼
+     │                                 │
+     ▼                                 ▼
+Use question tool: "Does this        Use question tool: "Bug report
+look good? Ready to move to          complete. Ready to create tasks?"
+Design?" OR if user says "fast       OR if user says "fast forward",
+forward", do all stages and stop     do remaining stages and stop
+before implementation                 before implementation
+     │                                 │
+     ▼                                 ▼
 WAIT for user confirmation           WAIT for user confirmation
-(yes/proceed/go ahead)               (yes/proceed/go ahead)
-    │                                 │
-    ▼                                 ▼
+(yes/proceed/go ahead/fast forward)  (yes/proceed/go ahead/fast forward)
+     │                                 │
+     ▼                                 ▼
 ┌─────────────────────┐              ┌─────────────────────┐
 │ STAGE 2:            │              │ STAGE 2:            │
 │ Create design.md    │              │ Create tasks.md     │
 └─────────────────────┘              └─────────────────────┘
-    │                                 │
-    ▼                                 ▼
-Ask: "Design complete.              Ask: "Tasks ready.
-Ready to move to Tasks?"            Ready to begin implementation?"
-    │                                 │
-    ▼                                 ▼
+     │                                 │
+     ▼                                 ▼
+Use question tool: "Design           Use question tool: "Tasks
+complete. Ready to move to           ready. Ready to begin
+Tasks?" OR if user says "fast        implementation?" OR if user
+forward", do remaining stage         says "fast forward", do
+and stop before implementation       remaining stage and stop
+     │                                 │
+     ▼                                 ▼
 WAIT for user confirmation           WAIT for user confirmation
-(yes/proceed/go ahead)               (yes/proceed/go ahead)
-    │                                 │
-    ▼                                 ▼
+(yes/proceed/go ahead/fast forward)  (yes/proceed/go ahead/fast forward)
+     │                                 │
+     ▼                                 ▼
 ┌─────────────────────┐              ┌─────────────────────┐
 │ STAGE 3:            │              │ IMPLEMENTATION:    │
 │ Create tasks.md     │              │ Begin fixing bug   │
 └─────────────────────┘              └─────────────────────┘
-    │                                 │
-    ▼                                 ▼
-Ask: "Tasks ready.
-Ready to begin implementation?"
-    │
-    ▼
+     │                                 │
+     ▼                                 ▼
+Use question tool: "Tasks
+ready. Ready to begin
+implementation?" OR if user
+says "fast forward", stop
+     │
+     ▼
 WAIT for user confirmation
 (yes/proceed/go ahead)
-    │
-    ▼
+     │
+     ▼
 IMPLEMENTATION:
 Begin building feature
-    │
-    ▼
+     │
+     ▼
 END
 ```
 
@@ -257,15 +271,17 @@ User provides description
     ↓
 Create requirements.md (Stage 1)
     ↓
-    WAIT for confirmation: "Does this look good? Ready to move to Design?"
+    Use question tool: "Does this look good? Ready to move to Design?"
+    (User may say "fast forward" to do all remaining stages without implementing)
     ↓ ONLY AFTER USER CONFIRMS
 Create design.md (Stage 2)
     ↓
-    WAIT for confirmation: "Design complete. Ready to move to Tasks?"
+    Use question tool: "Design complete. Ready to move to Tasks?"
+    (User may say "fast forward" to do remaining stage without implementing)
     ↓ ONLY AFTER USER CONFIRMS
 Create tasks.md (Stage 3)
     ↓
-    WAIT for confirmation: "Tasks ready. Ready to begin implementation?"
+    Use question tool: "Tasks ready. Ready to begin implementation?"
     ↓ ONLY AFTER USER CONFIRMS
 Begin implementation → Mark tasks complete
 ```
@@ -276,11 +292,12 @@ User describes bug
     ↓
 Create bug-report.md (Stage 1)
     ↓
-    WAIT for confirmation: "Bug report complete. Ready to create tasks?"
+    Use question tool: "Bug report complete. Ready to create tasks?"
+    (User may say "fast forward" to do remaining stage without implementing)
     ↓ ONLY AFTER USER CONFIRMS
 Create tasks.md (Stage 2)
     ↓
-    WAIT for confirmation: "Tasks ready. Ready to begin implementation?"
+    Use question tool: "Tasks ready. Ready to begin implementation?"
     ↓ ONLY AFTER USER CONFIRMS
 Begin implementation → Mark tasks complete
 ```
