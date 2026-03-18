@@ -171,79 +171,52 @@ When generating a slug:
    - Features: `0001-user-login`, `0002-new-layout`
    - Bugs: `0001-login-button-fix`, `0002-api-timeout-error`
 
-```
-START: User provides initial description
-     │
-     ▼
-Determine type: Feature or Bug?
-     │
-     ├─── FEATURE ─────────────────────┐
-     │                                 │
-     ▼                                 ▼
-Check existing specs, generate slug   Bug: Check existing specs, generate slug
-(0001-feature-name, etc.)            (0001-bug-name-fix, etc.)
-     │                                 │
-     ▼                                 ▼
-Create directory                      Create directory
-specs/in-progress/[slug]/           specs/in-progress/[slug]/
-     │                                 │
-     ▼                                 ▼
-┌─────────────────────┐              ┌─────────────────────┐
-│ STAGE 1:            │              │ STAGE 1:            │
-│ Create requirements │              │ Create bug-report   │
-│ .md                  │              │ .md                  │
-└─────────────────────┘              └─────────────────────┘
-     │                                 │
-     ▼                                 ▼
-Use question tool: "Does this        Use question tool: "Bug report
-look good? Ready to move to          complete. Ready to create tasks?"
-Design?" OR if user says "fast       OR if user says "fast forward",
-forward", do all stages and stop     do remaining stages and stop
-before implementation                 before implementation
-     │                                 │
-     ▼                                 ▼
-WAIT for user confirmation           WAIT for user confirmation
-(yes/proceed/go ahead/fast forward)  (yes/proceed/go ahead/fast forward)
-     │                                 │
-     ▼                                 ▼
-┌─────────────────────┐              ┌─────────────────────┐
-│ STAGE 2:            │              │ STAGE 2:            │
-│ Create design.md    │              │ Create tasks.md     │
-└─────────────────────┘              └─────────────────────┘
-     │                                 │
-     ▼                                 ▼
-Use question tool: "Design           Use question tool: "Tasks
-complete. Ready to move to           ready. Ready to begin
-Tasks?" OR if user says "fast        implementation?" OR if user
-forward", do remaining stage         says "fast forward", do
-and stop before implementation       remaining stage and stop
-     │                                 │
-     ▼                                 ▼
-WAIT for user confirmation           WAIT for user confirmation
-(yes/proceed/go ahead/fast forward)  (yes/proceed/go ahead/fast forward)
-     │                                 │
-     ▼                                 ▼
-┌─────────────────────┐              ┌─────────────────────┐
-│ STAGE 3:            │              │ IMPLEMENTATION:    │
-│ Create tasks.md     │              │ Begin fixing bug   │
-└─────────────────────┘              └─────────────────────┘
-     │                                 │
-     ▼                                 ▼
-Use question tool: "Tasks
-ready. Ready to begin
-implementation?" OR if user
-says "fast forward", stop
-     │
-     ▼
-WAIT for user confirmation
-(yes/proceed/go ahead)
-     │
-     ▼
-IMPLEMENTATION:
-Begin building feature
-     │
-     ▼
-END
+### Workflow Diagram
+
+```mermaid
+flowchart TD
+    START([User provides initial description]) --> Determine{Determine type: Feature or Bug?}
+    
+    Determine -->|Feature| FeaturePath
+    Determine -->|Bug| BugPath
+    
+    FeaturePath --> FeatureSlug[Generate slug: 0001-feature-name]
+    BugPath --> BugSlug[Generate slug: 0001-bug-name-fix]
+    
+    FeatureSlug --> FeatureDir[Create directory specs/in-progress/[slug]/]
+    BugSlug --> BugDir[Create directory specs/in-progress/[slug]/]
+    
+    FeatureDir --> FeatureStage1[STAGE 1: Create requirements.md]
+    BugDir --> BugStage1[STAGE 1: Create bug-report.md]
+    
+    FeatureStage1 --> FeatureQ1{Use question tool: Ready to move to Design? / Fast forward?}
+    BugStage1 --> BugQ1{Use question tool: Ready to create tasks? / Fast forward?}
+    
+    FeatureQ1 -->|User confirms| FeatureStage2[STAGE 2: Create design.md]
+    BugQ1 -->|User confirms| BugStage2[STAGE 2: Create tasks.md]
+    
+    FeatureQ1 -->|Fast forward| FeatureFastForward[Complete all remaining stages]
+    BugQ1 -->|Fast forward| BugFastForward[Complete remaining stage]
+    
+    FeatureFastForward --> FeatureStop[Stop before implementation]
+    BugFastForward --> BugStop[Stop before implementation]
+    
+    FeatureStage2 --> FeatureQ2{Use question tool: Ready to move to Tasks? / Fast forward?}
+    BugStage2 --> BugQ2{Use question tool: Ready to begin implementation?}
+    
+    FeatureQ2 -->|User confirms| FeatureStage3[STAGE 3: Create tasks.md]
+    BugQ2 -->|User confirms| BugImpl[IMPLEMENTATION: Begin fixing bug]
+    
+    FeatureQ2 -->|Fast forward| FeatureStage3
+    
+    FeatureStage3 --> FeatureQ3{Use question tool: Ready to begin implementation?}
+    FeatureQ3 -->|User confirms| FeatureImpl[IMPLEMENTATION: Begin building feature]
+    
+    FeatureImpl --> END([END])
+    BugImpl --> END
+    
+    FeatureStop --> END
+    BugStop --> END
 ```
 
 **For Features:** Complete Stages 1, 2, and 3 with confirmation at each step
