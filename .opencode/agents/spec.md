@@ -54,8 +54,9 @@ Examples: `0001-user-login`, `0002-api-timeout-fix`
 ## Key Rules
 
 - **Use the question tool** - After each spec file, use it and STOP. Do NOT proceed until user says "yes", "proceed", or "fast forward"
-- **Load skills for formatting** - `spec-requirements` for requirements, `spec-design` for design, `bug-report` for bugs, `spec-tasks` for tasks
+- **Load skills for formatting** - `spec-requirements` for requirements, `spec-design` for design, `bug-report` for bugs, `spec-tasks` for tasks, `project-glossary` for terminology
 - **Use `tasks.md` as your todo list** - Mark `[x]` as you complete tasks
+- **Load glossary first** - Always load `spec/glossary.md` when starting any new spec to ensure consistent terminology
 
 ---
 
