@@ -39,7 +39,7 @@ All specs go in `specs/in-progress/[slug]/`:
 - Features: `requirements.md`, `design.md`, `tasks.md`
 - Bugs: `bug-report.md`, `tasks.md`
 
-When complete, move to `specs/complete/[slug]/`
+When complete, you MUST use the `question` tool to ask the user "Ready to move to completed folder?" and WAIT for their response before moving to `specs/complete/[slug]/`
 
 ---
 

@@ -27,7 +27,7 @@ High-level description of how this feature fits into the system. Include:
 
 ### 3. Interface Design
 
-Document how this feature exposes its functionality:
+Document how this feature exposes its functionality. **Keep interfaces shallow** - describe what the interface does, not how it does it. No implementation details.
 
 | Interface | Input | Output | Description |
 |-----------|-------|--------|-------------|
@@ -35,7 +35,7 @@ Document how this feature exposes its functionality:
 | deleteUser | `id: UUID` | `{ success }` | Deletes a user by ID |
 
 Include:
-- Function/method signatures
+- Function/method signatures only (no bodies)
 - Command syntax (for CLI tools)
 - Protocol messages (for IPC/networking)
 - Request/response formats
@@ -67,7 +67,7 @@ If modifying existing models:
 
 ### 5. Key Components
 
-Describe each major component/module:
+Describe each major component/module. **Keep descriptions shallow** - focus on responsibilities and interface signatures, not implementations. For complex algorithms, use pseudo-code.
 
 ```markdown
 ### UserService
@@ -81,6 +81,14 @@ Describe each major component/module:
 - `create(input: CreateUserInput): Promise<User>`
 - `findById(id: string): Promise<User | null>`
 - `delete(id: string): Promise<void>`
+
+**Algorithm Example (if complex):**
+\`\`\`
+function calculatePriority(user):
+  baseScore = user.reputation * 0.5
+  recencyBonus = now() - user.lastActive < 7 days ? 10 : 0
+  return baseScore + recencyBonus
+\`\`\`
 
 **Dependencies:**
 - UserRepository
@@ -105,7 +113,7 @@ Describe how users interact with this feature:
 - Error states and recovery paths
 
 #### Input/Output Examples
-```markdown
+\`\`\`markdown
 # CLI example
 $ myapp user create --name "John" --email "john@example.com"
 Created user: 550e8400-e29b-41d4-a716-446655440000
@@ -113,6 +121,7 @@ Created user: 550e8400-e29b-41d4-a716-446655440000
 # API example
 $ curl -X POST /users -d '{"name": "John"}'
 {"id": "550e8400-e29b-41d4-a716-446655440000"}
+\`\`\`
 ```
 
 ### 7. External Dependencies
@@ -242,3 +251,4 @@ Document architectural decisions and trade-offs:
 4. **Document rationale** - Don't just say what, say why
 5. **Consider testing** - Include test strategy per component
 6. **Adapt to context** - Use appropriate terminology for your project type
+7. **Keep it shallow** - Describe interfaces, not implementations. Use pseudo-code for complex algorithms. A design doc should tell a developer *what* to build, not *how* to build it.
