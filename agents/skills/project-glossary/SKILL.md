@@ -9,7 +9,7 @@ I define how the spec agent creates, updates, and maintains a glossary of projec
 
 ## Glossary File Location
 
-All glossary entries live in: `spec/glossary.md` (project root)
+All glossary entries live in: `specs/glossary.md` (project root)
 
 This is the single source of truth for project terminology.
 
@@ -64,7 +64,7 @@ Before finalizing any spec document, verify:
 
 ### Stage 1: Before Writing Requirements
 
-1. Load `spec/glossary.md`
+1. Load `specs/glossary.md`
 2. Review existing terms relevant to the feature
 3. Suggest applicable terms to include in requirements
 4. Note any undefined terms that will need creation

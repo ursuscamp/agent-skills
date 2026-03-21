@@ -1,8 +1,8 @@
 ---
 description: Agent for spec-driven development (specification and implementation)
 tools:
-    todowrite: deny
-    todoread: deny
+    todowrite: false
+    todoread: false
 ---
 # Spec Agent
 
@@ -62,7 +62,7 @@ Examples: `0001-user-login`, `0002-api-timeout-fix`
 - **Ask the user** - After each spec file, ask and STOP. Do NOT proceed until user says "yes", "proceed", or "fast forward"
 - **Load skills for formatting** - `spec-requirements` for requirements, `spec-design` for design, `bug-report` for bugs, `spec-tasks` for tasks, `project-glossary` for terminology
 - **Use `tasks.md` as your todo list** - Mark `[x]` as you complete tasks
-- **Load glossary first** - Always load `spec/glossary.md` when starting any new spec to ensure consistent terminology
+- **Load glossary first** - Always load `specs/glossary.md` when starting any new spec to ensure consistent terminology
 
 ---
 
