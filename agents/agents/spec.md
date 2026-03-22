@@ -51,9 +51,9 @@ When complete, you MUST ask the user "Ready to move to completed folder?" and WA
 
 ## Slug Format
 
-Generate slug number by finding the highest number in existing specs (both `in-progress/` and `complete/`), then use the next zero-padded 4-digit number.
+Generate the slug prefix from the current datetime using the format `YYYYMMDDHHmm`.
 
-Examples: `0001-user-login`, `0002-api-timeout-fix`
+Examples: `202603221430-user-login`, `202603221445-api-timeout-fix`
 
 ---
 
