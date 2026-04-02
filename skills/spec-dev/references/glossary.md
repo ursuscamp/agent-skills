@@ -1,6 +1,6 @@
 # Glossary Workflow
 
-Maintain project terminology in `specs/glossary.md`.
+Maintain project terminology in `[base-specs-dir]/glossary.md`.
 
 ## Entry format
 

@@ -22,14 +22,24 @@ Before creating any spec file for a new stage, ask for confirmation and wait for
 
 Valid confirmations include `yes`, `proceed`, `continue`, `ready`, or `fast forward`.
 
+## Base specs directory
+
+Resolve the base specs directory before reading or writing any spec artifact:
+
+1. Check for a project file named `.specs-folder` at the repository root.
+2. If it exists, read its contents and treat that path as the base specs directory.
+3. If it does not exist, use `specs/` as the base specs directory.
+
+The `.specs-folder` value takes precedence over the default. Treat it as a project-relative path unless the file clearly specifies an absolute path.
+
 ## Workspace layout
 
 Store active specs in:
 
-- `specs/in-progress/[slug]/requirements.md`
-- `specs/in-progress/[slug]/design.md`
-- `specs/in-progress/[slug]/tasks.md`
-- `specs/in-progress/[slug]/bug-report.md`
+- `[base-specs-dir]/in-progress/[slug]/requirements.md`
+- `[base-specs-dir]/in-progress/[slug]/design.md`
+- `[base-specs-dir]/in-progress/[slug]/tasks.md`
+- `[base-specs-dir]/in-progress/[slug]/bug-report.md`
 
 When implementation is complete, ask:
 
@@ -37,7 +47,7 @@ When implementation is complete, ask:
 
 Only after confirmation, move the spec folder to:
 
-- `specs/complete/[slug]/`
+- `[base-specs-dir]/complete/[slug]/`
 
 ## Slug format
 
@@ -53,25 +63,27 @@ Example:
 
 ### Features
 
-1. Load `specs/glossary.md` if it exists. If it does not exist, continue without it and create/update it only when needed.
-2. Confirm scope with the user if the request is materially ambiguous.
-3. Create `requirements.md` using [`references/requirements.md`](references/requirements.md).
-4. Stop and ask: `Ready for Design?`
-5. Create `design.md` using [`references/design.md`](references/design.md).
-6. Stop and ask: `Ready for Tasks?`
-7. Create `tasks.md` using [`references/tasks.md`](references/tasks.md).
-8. Stop and ask: `Ready to implement?`
-9. Implement the work and update `tasks.md` as tasks are completed.
+1. Resolve the base specs directory.
+2. Load `[base-specs-dir]/glossary.md` if it exists. If it does not exist, continue without it and create/update it only when needed.
+3. Confirm scope with the user if the request is materially ambiguous.
+4. Create `requirements.md` using [`references/requirements.md`](references/requirements.md).
+5. Stop and ask: `Ready for Design?`
+6. Create `design.md` using [`references/design.md`](references/design.md).
+7. Stop and ask: `Ready for Tasks?`
+8. Create `tasks.md` using [`references/tasks.md`](references/tasks.md).
+9. Stop and ask: `Ready to implement?`
+10. Implement the work and update `tasks.md` as tasks are completed.
 
 ### Bugs
 
-1. Load `specs/glossary.md` if it exists and use consistent project terminology.
-2. Investigate enough to write a concrete bug report.
-3. Create `bug-report.md` using [`references/bug-report.md`](references/bug-report.md).
-4. Stop and ask: `Ready for Tasks?`
-5. Create `tasks.md` using [`references/tasks.md`](references/tasks.md).
-6. Stop and ask: `Ready to implement?`
-7. Implement the fix and update `tasks.md` as tasks are completed.
+1. Resolve the base specs directory.
+2. Load `[base-specs-dir]/glossary.md` if it exists and use consistent project terminology.
+3. Investigate enough to write a concrete bug report.
+4. Create `bug-report.md` using [`references/bug-report.md`](references/bug-report.md).
+5. Stop and ask: `Ready for Tasks?`
+6. Create `tasks.md` using [`references/tasks.md`](references/tasks.md).
+7. Stop and ask: `Ready to implement?`
+8. Implement the fix and update `tasks.md` as tasks are completed.
 
 ## Fast forward mode
 
@@ -84,7 +96,7 @@ If the user explicitly asks to "fast forward" or "do all stages":
 
 ## Glossary handling
 
-When project-specific terms appear, use [`references/glossary.md`](references/glossary.md) to maintain `specs/glossary.md`.
+When project-specific terms appear, use [`references/glossary.md`](references/glossary.md) to maintain `[base-specs-dir]/glossary.md`.
 
 Always:
 
