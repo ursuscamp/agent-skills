@@ -31,6 +31,7 @@ Run it without `--once` to keep watching for changes and resync automatically.
 ## Current skills
 
 - [`jira`](./skills/jira/SKILL.md) - Jira workflows via the local `jira` CLI, including issue search, editing, comments, and sprint/epic operations
+- [`github`](./skills/github/SKILL.md) - GitHub workflows via the local `gh` CLI, including auth, repo targeting, issues, pull requests, workflows, releases, and API calls
 - [`spec-dev`](./skills/spec-dev/SKILL.md) - staged spec-driven development workflow for features and bugs
 - [`neovim-plugin-dev`](./skills/neovim-plugin-dev/SKILL.md) - Neovim expertise and plugin development workflow with cached local help docs
 - [`playwright-cli`](./skills/playwright-cli/SKILL.md) - browser automation workflow for the Playwright coding-agent CLI, including snapshots, sessions, captures, and advanced debugging
