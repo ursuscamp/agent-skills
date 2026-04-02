@@ -28,9 +28,10 @@ The script also removes installed skills that no longer exist in the source tree
 
 Run it without `--once` to keep watching for changes and resync automatically.
 
-## Current skill
+## Current skills
 
 - [`spec-dev`](./skills/spec-dev/SKILL.md) - staged spec-driven development workflow for features and bugs
+- [`neovim-plugin-dev`](./skills/neovim-plugin-dev/SKILL.md) - Neovim expertise and plugin development workflow with cached local help docs
 
 ## Adding a new skill
 
