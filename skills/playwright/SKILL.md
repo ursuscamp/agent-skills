@@ -1,9 +1,9 @@
 ---
-name: playwright-cli
-description: Use when Codex needs browser automation through the Playwright coding-agent CLI, including opening pages, navigating, inspecting snapshots, targeting elements by ref or selector, capturing screenshots or PDFs, managing named browser sessions, inspecting storage or network state, recording traces or video, mocking requests, or generating Playwright test code from interactive browser work.
+name: playwright
+description: Use when Codex needs browser automation with Playwright, especially through the Playwright coding-agent CLI, including opening pages, navigating, inspecting snapshots, targeting elements by ref or selector, capturing screenshots or PDFs, managing named browser sessions, inspecting storage or network state, recording traces or video, mocking requests, or generating Playwright test code from interactive browser work.
 ---
 
-# Playwright CLI
+# Playwright
 
 Use this skill to drive the browser through `playwright-cli` instead of guessing at browser behavior or writing ad hoc Playwright scripts first.
 
