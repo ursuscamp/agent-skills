@@ -19,19 +19,25 @@ You can override the target location with:
 - `AGENTS_HOME`
 - `AGENTS_SKILLS_DIR`
 
-The script also removes installed skills that no longer exist in the source tree, so the destination stays in sync.
+The script also removes installed skills that no longer exist in the source tree, and it prunes skills that are on that target's ignore list, so the destination stays in sync.
 
 ## Usage
 
 ```bash
-./install-skills --once
+./install-skills
 ```
 
 ```bash
-./install-skills --once --kiro
+./install-skills --kiro
 ```
 
-Run it without `--once` to keep watching for changes and resync automatically.
+```bash
+./install-skills --ignore github
+```
+
+Use `--watch` when you want to keep watching for changes and resync automatically.
+
+`--ignore <skill-name>` is persistent for the selected target. If you ignore `github` on the default target, future default syncs will keep skipping it even if you omit the flag. The Kiro target keeps its own separate ignore list.
 
 ## Current skills
 
@@ -45,4 +51,5 @@ Run it without `--once` to keep watching for changes and resync automatically.
 
 1. Create a new folder under [`skills/`](./skills).
 2. Add a `SKILL.md` file to that folder.
-3. Run `./install-skills --once` to publish it to the shared skills directory, or `./install-skills --once --kiro` to publish it to Kiro.
+3. Run `./install-skills` to publish it to the shared skills directory, or `./install-skills --kiro` to publish it to Kiro.
+4. If needed, run `./install-skills --ignore <skill-name>` to keep a skill excluded for that target going forward.

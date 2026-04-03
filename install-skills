@@ -13,20 +13,23 @@ TARGET_ROOT="$DEFAULT_TARGET_ROOT"
 TARGET_SKILLS="$TARGET_ROOT"
 STATE_DIR="$TARGET_ROOT/.skill-sync"
 SKILLS_STATE="$STATE_DIR/skills.txt"
+IGNORED_STATE="$STATE_DIR/ignored.txt"
 
-MODE="watch"
+MODE="once"
 INSTALL_TARGET="agents"
+IGNORE_ARGS=()
 
 usage() {
   cat <<'EOF'
-Usage: ./install-skills [--watch|--once] [--kiro]
+Usage: ./install-skills [--watch|--once] [--kiro] [--ignore <skill-name>]
 
 Copies this repo's skills into a shared agent skills directory.
 
 Options:
-  --watch  Sync once, then keep watching for changes (default)
-  --once   Sync once and exit
+  --watch  Sync once, then keep watching for changes
+  --once   Sync once and exit (default)
   --kiro   Sync to ~/.kiro/skills instead of the default agents target
+  --ignore Persistently skip syncing a skill for the selected target
   --help   Show this help text
 
 Environment:
@@ -46,6 +49,15 @@ while [ "$#" -gt 0 ]; do
     --kiro)
       INSTALL_TARGET="kiro"
       ;;
+    --ignore)
+      shift
+      if [ "$#" -eq 0 ]; then
+        printf 'Missing skill name for --ignore\n\n' >&2
+        usage >&2
+        exit 1
+      fi
+      IGNORE_ARGS+=("$1")
+      ;;
     --help|-h)
       usage
       exit 0
@@ -64,6 +76,7 @@ if [ "$INSTALL_TARGET" = "kiro" ]; then
   TARGET_SKILLS="$TARGET_ROOT"
   STATE_DIR="$TARGET_ROOT/.skill-sync"
   SKILLS_STATE="$STATE_DIR/skills.txt"
+  IGNORED_STATE="$STATE_DIR/ignored.txt"
 fi
 
 require_source_layout() {
@@ -77,6 +90,47 @@ prepare_target_dirs() {
   mkdir -p "$TARGET_SKILLS" "$STATE_DIR"
 }
 
+update_ignored_state() {
+  local ignored_file
+  ignored_file="$(mktemp)"
+
+  if [ -f "$IGNORED_STATE" ]; then
+    cat "$IGNORED_STATE" >> "$ignored_file"
+  fi
+
+  if [ "${#IGNORE_ARGS[@]}" -gt 0 ]; then
+    printf '%s\n' "${IGNORE_ARGS[@]}" >> "$ignored_file"
+  fi
+
+  python3 - <<'PY' "$ignored_file" "$IGNORED_STATE"
+import pathlib
+import sys
+
+source = pathlib.Path(sys.argv[1])
+target = pathlib.Path(sys.argv[2])
+
+entries = sorted({
+    line.strip()
+    for line in source.read_text().splitlines()
+    if line.strip()
+})
+
+target.write_text("".join(f"{entry}\n" for entry in entries))
+PY
+
+  rm -f "$ignored_file"
+}
+
+is_ignored_skill() {
+  local skill_name="$1"
+
+  if [ ! -f "$IGNORED_STATE" ]; then
+    return 1
+  fi
+
+  grep -Fqx "$skill_name" "$IGNORED_STATE"
+}
+
 sync_skills() {
   local current_file
   current_file="$(mktemp)"
@@ -84,6 +138,11 @@ sync_skills() {
   while IFS= read -r source_dir; do
     local name
     name="$(basename "$source_dir")"
+
+    if is_ignored_skill "$name"; then
+      continue
+    fi
+
     printf '%s\n' "$name" >> "$current_file"
     mkdir -p "$TARGET_SKILLS/$name"
     rsync -a --delete "$source_dir/" "$TARGET_SKILLS/$name/"
@@ -114,6 +173,7 @@ PY
 }
 
 sync_all() {
+  update_ignored_state
   sync_skills
   printf '[%s] Synced to %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$TARGET_ROOT"
 }
