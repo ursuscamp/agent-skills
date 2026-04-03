@@ -7,22 +7,26 @@ SOURCE_ROOT="$SCRIPT_DIR/skills"
 SOURCE_SKILLS="$SOURCE_ROOT"
 
 AGENTS_HOME_DIR="${AGENTS_HOME:-$HOME/.agents}"
-TARGET_ROOT="${AGENTS_SKILLS_DIR:-$AGENTS_HOME_DIR/skills}"
+DEFAULT_TARGET_ROOT="${AGENTS_SKILLS_DIR:-$AGENTS_HOME_DIR/skills}"
+KIRO_TARGET_ROOT="$HOME/.kiro/skills"
+TARGET_ROOT="$DEFAULT_TARGET_ROOT"
 TARGET_SKILLS="$TARGET_ROOT"
 STATE_DIR="$TARGET_ROOT/.skill-sync"
 SKILLS_STATE="$STATE_DIR/skills.txt"
 
 MODE="watch"
+INSTALL_TARGET="agents"
 
 usage() {
   cat <<'EOF'
-Usage: ./install-skills [--watch|--once]
+Usage: ./install-skills [--watch|--once] [--kiro]
 
 Copies this repo's skills into a shared agent skills directory.
 
 Options:
   --watch  Sync once, then keep watching for changes (default)
   --once   Sync once and exit
+  --kiro   Sync to ~/.kiro/skills instead of the default agents target
   --help   Show this help text
 
 Environment:
@@ -39,6 +43,9 @@ while [ "$#" -gt 0 ]; do
     --once)
       MODE="once"
       ;;
+    --kiro)
+      INSTALL_TARGET="kiro"
+      ;;
     --help|-h)
       usage
       exit 0
@@ -51,6 +58,13 @@ while [ "$#" -gt 0 ]; do
   esac
   shift
 done
+
+if [ "$INSTALL_TARGET" = "kiro" ]; then
+  TARGET_ROOT="$KIRO_TARGET_ROOT"
+  TARGET_SKILLS="$TARGET_ROOT"
+  STATE_DIR="$TARGET_ROOT/.skill-sync"
+  SKILLS_STATE="$STATE_DIR/skills.txt"
+fi
 
 require_source_layout() {
   if [ ! -d "$SOURCE_SKILLS" ]; then

@@ -12,6 +12,7 @@ This repository contains local agent skill definitions plus a small installer sc
 `install-skills` looks for subdirectories under [`skills/`](./skills) that contain a `SKILL.md` file. Each matching skill is copied into:
 
 - `~/.agents/skills/<skill-name>` by default
+- `~/.kiro/skills/<skill-name>` when you pass `--kiro`
 
 You can override the target location with:
 
@@ -24,6 +25,10 @@ The script also removes installed skills that no longer exist in the source tree
 
 ```bash
 ./install-skills --once
+```
+
+```bash
+./install-skills --once --kiro
 ```
 
 Run it without `--once` to keep watching for changes and resync automatically.
@@ -40,4 +45,4 @@ Run it without `--once` to keep watching for changes and resync automatically.
 
 1. Create a new folder under [`skills/`](./skills).
 2. Add a `SKILL.md` file to that folder.
-3. Run `./install-skills --once` to publish it to the shared skills directory.
+3. Run `./install-skills --once` to publish it to the shared skills directory, or `./install-skills --once --kiro` to publish it to Kiro.
