@@ -49,6 +49,8 @@ Only after confirmation, move the spec folder to:
 
 - `[base-specs-dir]/complete/[slug]/`
 
+Completed specs are historical records of the work as it was planned and delivered. Do not treat them as living documents, and do not update them to reflect later changes unless the user explicitly asks to revise the archived spec itself.
+
 ## Slug format
 
 Generate slugs as:
@@ -113,6 +115,7 @@ During implementation:
 - Mark completed items as `[x]` immediately
 - Update completion summary as progress changes
 - Preserve the staged intent of the spec unless the user explicitly changes scope
+- Once a spec has been moved to `[base-specs-dir]/complete/[slug]/`, leave it archived unless the user explicitly requests a revision to that completed spec
 
 ## Writing guidance
 
