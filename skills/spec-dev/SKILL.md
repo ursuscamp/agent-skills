@@ -1,6 +1,6 @@
 ---
 name: spec-dev
-description: Use when the user wants staged spec-driven development in a generic workflow, including requirements, design, bug reports, task plans, and implementation gated by explicit confirmation between stages.
+description: Use when the user wants staged spec-driven development in a generic workflow, including a built-in interrogation phase before requirements, design, bug reports, task plans, and implementation gated by explicit confirmation between stages.
 ---
 
 # Spec-Driven Development
@@ -11,10 +11,28 @@ Use this skill when a user wants to plan work through specs before implementatio
 
 This skill supports a staged spec-driven workflow in a generic, tool-agnostic form:
 
+- Interrogate unclear feature or bug requests before writing any spec artifact
 - Feature flow: `requirements.md` -> `design.md` -> `tasks.md` -> implementation
 - Bug flow: `bug-report.md` -> `tasks.md` -> implementation
 - After each file, stop and ask for confirmation before continuing
 - If the user says "fast forward" or "do all stages", generate all remaining spec files, then stop before implementation
+
+## Interrogate
+
+Before creating any spec file, interview the user until the request is unambiguous.
+
+Cover the points most likely to change the spec:
+
+- desired outcome
+- current behavior or pain point
+- who is affected
+- constraints and non-goals
+- edge cases and failure modes
+- acceptance criteria
+- rollout, migration, or compatibility concerns
+- project-specific terminology the user wants preserved
+
+Ask exactly one question at a time. Use open-ended questions by default; use multiple-choice only when it will materially reduce ambiguity. Restate the current understanding after each answer and call out any remaining unknowns.
 
 ## Non-negotiable rule
 
@@ -67,34 +85,37 @@ Example:
 
 1. Resolve the base specs directory.
 2. Load `[base-specs-dir]/glossary.md` if it exists. If it does not exist, continue without it and create/update it only when needed.
-3. Confirm scope with the user if the request is materially ambiguous.
-4. Create `requirements.md` using [`references/requirements.md`](references/requirements.md).
-5. Stop and ask: `Ready for Design?`
-6. Create `design.md` using [`references/design.md`](references/design.md).
-7. Stop and ask: `Ready for Tasks?`
-8. Create `tasks.md` using [`references/tasks.md`](references/tasks.md).
-9. Stop and ask: `Ready to implement?`
-10. Implement the work and update `tasks.md` as tasks are completed.
+3. Interrogate the request until the scope, constraints, and success criteria are clear.
+4. Confirm the summary with the user before writing any spec artifact.
+5. Create `requirements.md` using [`references/requirements.md`](references/requirements.md).
+6. Stop and ask: `Ready for Design?`
+7. Create `design.md` using [`references/design.md`](references/design.md).
+8. Stop and ask: `Ready for Tasks?`
+9. Create `tasks.md` using [`references/tasks.md`](references/tasks.md).
+10. Stop and ask: `Ready to implement?`
+11. Implement the work and update `tasks.md` as tasks are completed.
 
 ### Bugs
 
 1. Resolve the base specs directory.
 2. Load `[base-specs-dir]/glossary.md` if it exists and use consistent project terminology.
-3. Investigate enough to write a concrete bug report.
-4. Create `bug-report.md` using [`references/bug-report.md`](references/bug-report.md).
-5. Stop and ask: `Ready for Tasks?`
-6. Create `tasks.md` using [`references/tasks.md`](references/tasks.md).
-7. Stop and ask: `Ready to implement?`
-8. Implement the fix and update `tasks.md` as tasks are completed.
+3. Interrogate the bug until reproduction, impact, and suspected boundaries are clear.
+4. Confirm the summary with the user before writing any spec artifact.
+5. Create `bug-report.md` using [`references/bug-report.md`](references/bug-report.md).
+6. Stop and ask: `Ready for Tasks?`
+7. Create `tasks.md` using [`references/tasks.md`](references/tasks.md).
+8. Stop and ask: `Ready to implement?`
+9. Implement the fix and update `tasks.md` as tasks are completed.
 
 ## Fast forward mode
 
 If the user explicitly asks to "fast forward" or "do all stages":
 
-1. Generate all remaining spec documents in sequence.
-2. Do not pause between spec documents.
-3. Stop before implementation.
-4. Ask for implementation confirmation.
+1. Run interrogation first.
+2. Generate all remaining spec documents in sequence once the summary is confirmed.
+3. Do not pause between spec documents.
+4. Stop before implementation.
+5. Ask for implementation confirmation.
 
 ## Glossary handling
 
