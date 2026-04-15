@@ -91,6 +91,17 @@ def format_duration(ms: Optional[int]) -> str:
     return f"{seconds}s"
 
 
+def format_elapsed_seconds(seconds: float) -> str:
+    total = int(seconds)
+    minutes, seconds = divmod(total, 60)
+    hours, minutes = divmod(minutes, 60)
+    if hours:
+        return f"{hours}h {minutes}m {seconds}s"
+    if minutes:
+        return f"{minutes}m {seconds}s"
+    return f"{seconds}s"
+
+
 def split_job_path(job: str) -> List[str]:
     return [part for part in job.strip("/").split("/") if part]
 
@@ -584,6 +595,8 @@ def command_trigger_build(args: argparse.Namespace) -> None:
     deadline = time.monotonic() + args.timeout
     build_url = None
     build_number = None
+    queue_started = time.monotonic()
+    last_queue_update = queue_started
     while time.monotonic() < deadline:
         queue_item = fetch_queue_item(client, location)
         if queue_item.get("cancelled"):
@@ -594,10 +607,20 @@ def command_trigger_build(args: argparse.Namespace) -> None:
         if build_url and build_number is not None:
             print(f"started build: #{build_number} {build_url}")
             break
+        now = time.monotonic()
+        if now - last_queue_update >= args.progress_interval:
+            why = queue_item.get("why") or "waiting in queue"
+            print(
+                "still queued: "
+                f"{format_elapsed_seconds(now - queue_started)} elapsed, {why}"
+            )
+            last_queue_update = now
         time.sleep(args.poll_interval)
     else:
         fail(f"timed out after {args.timeout}s waiting for Jenkins to start the build")
 
+    build_started = time.monotonic()
+    last_build_update = build_started
     while time.monotonic() < deadline:
         build = fetch_build_status(client, build_url)
         if not build.get("building"):
@@ -609,6 +632,13 @@ def command_trigger_build(args: argparse.Namespace) -> None:
             if result != "SUCCESS":
                 raise SystemExit(1)
             return
+        now = time.monotonic()
+        if now - last_build_update >= args.progress_interval:
+            print(
+                "still building: "
+                f"#{build.get('number')} {format_elapsed_seconds(now - build_started)} elapsed"
+            )
+            last_build_update = now
         time.sleep(args.poll_interval)
     fail(f"timed out after {args.timeout}s waiting for Jenkins to finish the build")
 
@@ -693,6 +723,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=1800,
         help="Maximum seconds to wait for the build when --wait is used",
+    )
+    trigger.add_argument(
+        "--progress-interval",
+        type=int,
+        default=30,
+        help="Seconds between heartbeat updates while waiting",
     )
     trigger.set_defaults(func=command_trigger_build)
     return parser
