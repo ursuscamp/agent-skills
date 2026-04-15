@@ -1,6 +1,6 @@
 ---
 name: jira
-description: Use when Codex needs to work with Jira through the local `jira` command line tool from `ankitpokhrel/jira-cli`, including configuring access, listing projects or boards, searching issues, viewing issue details, downloading attachments, creating or editing tickets, adding comments, transitioning status, managing epics or sprints, or logging work.
+description: Use when working with Jira through the local `jira` command line tool from `ankitpokhrel/jira-cli`, including configuring access, listing projects or boards, searching issues, viewing issue details, downloading attachments, creating or editing tickets, adding comments, transitioning status, managing epics or sprints, or logging work.
 ---
 
 # Jira Workflow

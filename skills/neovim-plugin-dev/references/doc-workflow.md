@@ -4,7 +4,7 @@ Use this reference when the main skill needs a quick reminder about how the cach
 
 ## Cache Contract
 
-- Default cache directory: `${NEOVIM_DOCS_DIR:-${TMPDIR:-/tmp}/codex-neovim-docs}`
+- Default cache directory: `${NEOVIM_DOCS_DIR:-${TMPDIR:-/tmp}/neovim-docs-cache}`
 - Export trigger: no cached `*.txt` help files are present, or the caller passes `--refresh`
 - Export source: `nvim --headless` plus the current runtimepath reported by that Neovim instance
 - Export fallback: retry with `nvim --clean --headless -i NONE` if the normal startup fails because of config or plugin side effects

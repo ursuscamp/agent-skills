@@ -1,6 +1,6 @@
 ---
 name: neovim-plugin-dev
-description: Expert help for Neovim usage, debugging, and plugin development. Use when Codex needs to build, review, fix, or explain Neovim configuration, Lua or Vimscript plugins, runtimepath behavior, user commands, keymaps, autocmds, LSP integrations, remote plugins, help topics, or Neovim API usage. Consult cached Neovim help docs before answering doc-sensitive questions.
+description: Expert help for Neovim usage, debugging, and plugin development. Use when building, reviewing, fixing, or explaining Neovim configuration, Lua or Vimscript plugins, runtimepath behavior, user commands, keymaps, autocmds, LSP integrations, remote plugins, help topics, or Neovim API usage. Consult cached Neovim help docs before answering doc-sensitive questions.
 ---
 
 # Neovim Plugin Development
@@ -18,7 +18,7 @@ Use this skill to ground Neovim answers in the local `:help` docs instead of mem
 
 Use [`scripts/cache-neovim-docs.sh`](scripts/cache-neovim-docs.sh) to manage the help cache.
 
-- Cache root: `${NEOVIM_DOCS_DIR:-${TMPDIR:-/tmp}/codex-neovim-docs}`
+- Cache root: `${NEOVIM_DOCS_DIR:-${TMPDIR:-/tmp}/neovim-docs-cache}`
 - Default behavior: if the cache is missing or has no exported help files, run Neovim in headless mode and export the current runtime docs into the cache directory
 - Fallback behavior: if the normal headless startup fails because of local config side effects, retry with a clean headless Neovim session
 - Refresh behavior: pass `--refresh` when the local Neovim install, runtimepath, or plugin set may have changed

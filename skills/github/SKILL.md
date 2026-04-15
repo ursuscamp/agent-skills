@@ -1,6 +1,6 @@
 ---
 name: github
-description: Use when Codex needs to work with GitHub through the local `gh` GitHub CLI, including authentication, repository inspection, issue and pull request workflows, release and workflow inspection, GitHub API or GraphQL calls, browsing, search, and repository-scoped automation from the terminal.
+description: Use when working with GitHub through the local `gh` GitHub CLI, including authentication, repository inspection, issue and pull request workflows, release and workflow inspection, GitHub API or GraphQL calls, browsing, search, and repository-scoped automation from the terminal.
 ---
 
 # GitHub CLI Workflow

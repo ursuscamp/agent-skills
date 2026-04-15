@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CACHE_DIR="${NEOVIM_DOCS_DIR:-${TMPDIR:-/tmp}/codex-neovim-docs}"
+CACHE_DIR="${NEOVIM_DOCS_DIR:-${TMPDIR:-/tmp}/neovim-docs-cache}"
 REFRESH=0
 PRINT_DIR=0
 

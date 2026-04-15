@@ -7,3 +7,4 @@
 - Update `README.md` only when visible repo behavior or the documented skill list changes.
 - Validate typical skill changes with `./install-skills --once`.
 - Preserve `install-skills` sync behavior, including pruning removed skills from the target directory.
+- Do not mention Codex in the skills, these are generic skills.

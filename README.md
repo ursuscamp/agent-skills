@@ -43,6 +43,7 @@ Use `--watch` when you want to keep watching for changes and resync automaticall
 
 - [`jira`](./skills/jira/SKILL.md) - Jira workflows via the local `jira` CLI, including issue search, editing, comments, and sprint/epic operations
 - [`github`](./skills/github/SKILL.md) - GitHub workflows via the local `gh` CLI, including auth, repo targeting, issues, pull requests, workflows, releases, and API calls
+- [`jenkins`](./skills/jenkins/SKILL.md) - Jenkins workflows for branch-aware build lookup, failure and test inspection, console troubleshooting, and triggering parameterized builds
 - [`spec-dev`](./skills/spec-dev/SKILL.md) - staged spec-driven development workflow for features and bugs, starting with an interrogation phase
 - [`neovim-plugin-dev`](./skills/neovim-plugin-dev/SKILL.md) - Neovim expertise and plugin development workflow with cached local help docs
 - [`playwright`](./skills/playwright/SKILL.md) - browser automation workflow for the Playwright coding-agent CLI, including snapshots, sessions, captures, and advanced debugging
