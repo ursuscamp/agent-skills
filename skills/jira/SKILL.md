@@ -45,7 +45,7 @@ jira project list
 jira board list
 ```
 
-The default config path shown by this installation is `/Users/rbreen/.config/.jira/.config.yml`, and it can be overridden with `JIRA_CONFIG_FILE`.
+The Jira CLI config path shown by this installation is `/Users/rbreen/.config/.jira/.config.yml`.
 
 ### Search and inspect issues
 
@@ -66,7 +66,8 @@ jira issue view ISSUE-123 --comments 5 --plain
 - The CLI does not expose a built-in attachment download command in this environment.
 - Use [`scripts/download_attachment.py`](scripts/download_attachment.py) to fetch attachment metadata via `jira issue view --raw` and then download the selected attachment over HTTP.
 - Select the attachment with `--attachment-name` or `--attachment-id`. If the issue has exactly one attachment, the script can pick it automatically.
-- The script can auto-authenticate for common local setups by combining `login` from the Jira CLI config with `JIRA_API_TOKEN`, or by using `JIRA_BEARER_TOKEN` when present.
+- The script can auto-authenticate from `~/.config/agent-skills/config.json` using `jira.bearer_token` or `jira.basic_user` plus `jira.basic_token`.
+- Put other defaults there too, such as `jira.project` or `jira.output_dir`.
 - Pass auth explicitly when needed:
   - `--header 'Authorization: Bearer ...'`
   - `--basic-user <email> --basic-token <token>`
@@ -77,8 +78,8 @@ Examples:
 
 ```bash
 python3 skills/jira/scripts/download_attachment.py ENG-123 --attachment-name report.pdf --output-dir /tmp/jira-downloads
-python3 skills/jira/scripts/download_attachment.py ENG-123 --attachment-id 10042 --basic-user user@example.com --basic-token "$JIRA_API_TOKEN"
-python3 skills/jira/scripts/download_attachment.py ENG-123 --header "Authorization: Bearer $JIRA_BEARER_TOKEN"
+python3 skills/jira/scripts/download_attachment.py ENG-123 --attachment-id 10042 --basic-user user@example.com --basic-token secret
+python3 skills/jira/scripts/download_attachment.py ENG-123 --header "Authorization: Bearer bearer-token"
 ```
 
 ### Create and edit issues

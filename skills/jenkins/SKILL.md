@@ -19,15 +19,17 @@ git rev-parse --abbrev-ref HEAD
 git rev-parse HEAD
 ```
 
-2. Create the Jenkins helper config file:
+2. Create the shared skill config file:
 
 ```bash
-mkdir -p ~/.config/jenkins-helper
-cat > ~/.config/jenkins-helper/config.json <<'JSON'
+mkdir -p ~/.config/agent-skills
+cat > ~/.config/agent-skills/config.json <<'JSON'
 {
-  "url": "https://jenkins.example.com",
-  "user": "your-user",
-  "token": "your-api-token"
+  "jenkins": {
+    "url": "https://jenkins.example.com",
+    "user": "your-user",
+    "token": "your-api-token"
+  }
 }
 JSON
 ```

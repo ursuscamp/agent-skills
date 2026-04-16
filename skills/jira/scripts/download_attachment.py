@@ -12,7 +12,6 @@ from __future__ import annotations
 import argparse
 import base64
 import json
-import os
 import pathlib
 import re
 import subprocess
@@ -20,6 +19,8 @@ import sys
 import urllib.error
 import urllib.request
 from typing import Any
+
+DEFAULT_CONFIG_PATH = pathlib.Path.home() / ".config" / "agent-skills" / "config.json"
 
 
 def parse_args() -> argparse.Namespace:
@@ -41,8 +42,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output-dir",
-        default=".",
-        help="Directory for downloaded files when --output is not set.",
+        default=None,
+        help="Directory for downloaded files when --output is not set. Defaults to config jira.output_dir or current directory.",
     )
     parser.add_argument(
         "--project",
@@ -85,7 +86,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--config-file",
-        help="Optional path to the jira CLI config file. Defaults to JIRA_CONFIG_FILE or ~/.config/.jira/.config.yml.",
+        help=f"Optional path to the shared config file. Defaults to {DEFAULT_CONFIG_PATH}.",
     )
     return parser.parse_args()
 
@@ -117,11 +118,11 @@ def run_jira_issue_view(issue_key: str, project: str | None) -> dict[str, Any]:
         raise SystemExit("`jira issue view --raw` did not return valid JSON.") from exc
 
 
-def load_metadata(args: argparse.Namespace) -> dict[str, Any]:
+def load_metadata(args: argparse.Namespace, project: str | None) -> dict[str, Any]:
     if args.metadata_file:
         with open(args.metadata_file, "r", encoding="utf-8") as handle:
             return json.load(handle)
-    return run_jira_issue_view(args.issue_key, args.project)
+    return run_jira_issue_view(args.issue_key, project)
 
 
 def looks_like_attachment(entry: Any) -> bool:
@@ -219,61 +220,79 @@ def sanitize_filename(name: str) -> str:
 def default_config_path(args: argparse.Namespace) -> pathlib.Path:
     if args.config_file:
         return pathlib.Path(args.config_file).expanduser()
-    env_path = pathlib.Path(
-        os.environ.get(
-            "JIRA_CONFIG_FILE",
-            "~/.config/.jira/.config.yml",
-        )
-    ).expanduser()
-    return env_path
+    return DEFAULT_CONFIG_PATH
 
 
-def read_simple_config(path: pathlib.Path) -> dict[str, str]:
+def load_config(path: pathlib.Path) -> dict[str, Any]:
     if not path.exists():
         return {}
 
-    values: dict[str, str] = {}
     with open(path, "r", encoding="utf-8") as handle:
-        for raw_line in handle:
-            line = raw_line.rstrip("\n")
-            if not line or line.startswith((" ", "\t")):
-                continue
-            if ":" not in line:
-                continue
-            key, value = line.split(":", 1)
-            values[key.strip()] = value.strip()
-    return values
+        payload = json.load(handle)
+    if not isinstance(payload, dict):
+        raise SystemExit(f"Config file {path} must contain a JSON object.")
+    return payload
+
+
+def section_config(config: dict[str, Any], section: str) -> dict[str, Any]:
+    value = config.get(section)
+    if isinstance(value, dict):
+        return value
+    return {}
+
+
+def config_value(config: dict[str, Any], section: str, key: str) -> Any | None:
+    for candidate in (
+        section_config(config, section),
+        section_config(config, "defaults"),
+        config,
+    ):
+        value = candidate.get(key)
+        if value is not None:
+            return value
+    return None
+
+
+def string_config_value(config: dict[str, Any], section: str, key: str) -> str | None:
+    value = config_value(config, section, key)
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise SystemExit(f"Config file value for '{section}.{key}' must be a string.")
+    return value
 
 
 def maybe_add_auto_auth(
-    headers: list[tuple[str, str]], args: argparse.Namespace
+    headers: list[tuple[str, str]],
+    config: dict[str, Any],
+    explicit_auth: bool,
 ) -> list[tuple[str, str]]:
-    if headers:
+    if explicit_auth:
         return headers
 
-    environ = os.environ
-    bearer = environ.get("JIRA_BEARER_TOKEN")
+    bearer = string_config_value(config, "jira", "bearer_token")
     if bearer:
-        return [("Authorization", f"Bearer {bearer}")]
+        return [*headers, ("Authorization", f"Bearer {bearer}")]
 
-    config = read_simple_config(default_config_path(args))
-    auth_type = config.get("auth_type", "").strip().lower()
-    login = config.get("login", "").strip()
-    token = environ.get("JIRA_API_TOKEN")
-    if auth_type == "basic" and login and token:
-        encoded = base64.b64encode(f"{login}:{token}".encode("utf-8")).decode("ascii")
-        return [("Authorization", f"Basic {encoded}")]
+    basic_user = string_config_value(config, "jira", "basic_user")
+    basic_token = string_config_value(config, "jira", "basic_token")
+    if basic_user and basic_token:
+        encoded = base64.b64encode(f"{basic_user}:{basic_token}".encode("utf-8")).decode("ascii")
+        return [*headers, ("Authorization", f"Basic {encoded}")]
 
     return headers
 
 
-def build_headers(args: argparse.Namespace) -> list[tuple[str, str]]:
+def build_headers(args: argparse.Namespace, config: dict[str, Any]) -> list[tuple[str, str]]:
     headers: list[tuple[str, str]] = []
+    explicit_auth = False
 
     for value in args.header:
         if ":" not in value:
             raise SystemExit(f"Invalid --header value {value!r}; expected NAME: VALUE.")
         name, raw_value = value.split(":", 1)
+        if name.strip().lower() == "authorization":
+            explicit_auth = True
         headers.append((name.strip(), raw_value.strip()))
 
     if args.basic_user or args.basic_token:
@@ -283,23 +302,27 @@ def build_headers(args: argparse.Namespace) -> list[tuple[str, str]]:
             f"{args.basic_user}:{args.basic_token}".encode("utf-8")
         ).decode("ascii")
         headers.append(("Authorization", f"Basic {token}"))
+        explicit_auth = True
 
     if args.cookie:
         headers.append(("Cookie", "; ".join(args.cookie)))
 
-    return maybe_add_auto_auth(headers, args)
+    if explicit_auth:
+        return headers
+
+    return maybe_add_auto_auth(headers, config, explicit_auth)
 
 
-def resolve_output_path(args: argparse.Namespace, attachment: dict[str, Any]) -> pathlib.Path:
-    if args.output:
-        path = pathlib.Path(args.output)
+def resolve_output_path(output: str | None, output_dir: str, attachment: dict[str, Any]) -> pathlib.Path:
+    if output:
+        path = pathlib.Path(output).expanduser()
         path.parent.mkdir(parents=True, exist_ok=True)
         return path
 
-    output_dir = pathlib.Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_dir_path = pathlib.Path(output_dir).expanduser()
+    output_dir_path.mkdir(parents=True, exist_ok=True)
     filename = sanitize_filename(str(attachment.get("filename", "attachment.bin")))
-    return output_dir / filename
+    return output_dir_path / filename
 
 
 def download(url: str, headers: list[tuple[str, str]], destination: pathlib.Path, timeout: int) -> None:
@@ -338,7 +361,15 @@ def print_attachments(attachments: list[dict[str, Any]]) -> None:
 
 def main() -> int:
     args = parse_args()
-    metadata = load_metadata(args)
+    config = load_config(default_config_path(args))
+    project = args.project or string_config_value(config, "jira", "project")
+    output_dir = (
+        args.output_dir
+        or string_config_value(config, "jira", "output_dir")
+        or string_config_value(config, "defaults", "output_dir")
+        or "."
+    )
+    metadata = load_metadata(args, project)
     attachments = find_attachment_lists(metadata)
 
     if args.list:
@@ -353,8 +384,8 @@ def main() -> int:
         attachment_id=args.attachment_id,
         attachment_name=args.attachment_name,
     )
-    destination = resolve_output_path(args, attachment)
-    headers = build_headers(args)
+    destination = resolve_output_path(args.output, output_dir, attachment)
+    headers = build_headers(args, config)
     url = str(attachment.get("content"))
 
     if not url:

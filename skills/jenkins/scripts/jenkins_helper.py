@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import base64
 import json
-import os
 import re
 import subprocess
 import sys
@@ -28,6 +27,7 @@ BRANCH_PARAMETER_KEYS = (
     "branch",
     "CHANGE_BRANCH",
 )
+DEFAULT_CONFIG_PATH = Path.home() / ".config" / "agent-skills" / "config.json"
 
 
 def fail(message: str) -> None:
@@ -36,11 +36,10 @@ def fail(message: str) -> None:
 
 
 def default_config_path() -> Path:
-    config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")).expanduser()
-    return config_home / "jenkins-helper" / "config.json"
+    return DEFAULT_CONFIG_PATH
 
 
-def load_config(path_value: Optional[str]) -> Dict[str, str]:
+def load_config(path_value: Optional[str]) -> Dict[str, object]:
     config_path = Path(path_value).expanduser() if path_value else default_config_path()
     if not config_path.exists():
         return {}
@@ -52,15 +51,35 @@ def load_config(path_value: Optional[str]) -> Dict[str, str]:
         fail(f"invalid JSON in config file {config_path}: {exc}")
     if not isinstance(payload, dict):
         fail(f"config file {config_path} must contain a JSON object")
-    normalized = {}
-    for key in ("url", "user", "token"):
-        value = payload.get(key)
-        if value is None:
-            continue
-        if not isinstance(value, str):
-            fail(f"config file {config_path} field '{key}' must be a string")
-        normalized[key] = value
-    return normalized
+    return payload
+
+
+def section_config(config: Dict[str, object], section: str) -> Dict[str, object]:
+    value = config.get(section)
+    if isinstance(value, dict):
+        return value
+    return {}
+
+
+def config_value(config: Dict[str, object], section: str, key: str) -> object | None:
+    for candidate in (
+        section_config(config, section),
+        section_config(config, "defaults"),
+        config,
+    ):
+        value = candidate.get(key)
+        if value is not None:
+            return value
+    return None
+
+
+def string_config_value(config: Dict[str, object], section: str, key: str) -> Optional[str]:
+    value = config_value(config, section, key)
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        fail(f"config file value for '{section}.{key}' must be a string")
+    return value
 
 
 def normalize_branch(value: str) -> str:
@@ -253,20 +272,20 @@ class Client:
 
 def make_client(args: argparse.Namespace) -> Client:
     config = load_config(args.config)
-    base_url = args.url or config.get("url") or os.environ.get("JENKINS_URL")
-    user = args.user or config.get("user") or os.environ.get("JENKINS_USER")
-    token = args.token or config.get("token") or os.environ.get("JENKINS_TOKEN")
+    base_url = args.url or string_config_value(config, "jenkins", "url")
+    user = args.user or string_config_value(config, "jenkins", "user")
+    token = args.token or string_config_value(config, "jenkins", "token")
     if not base_url:
         fail(
-            "set 'url' in the Jenkins helper config file, set JENKINS_URL, or pass --url"
+            f"set 'jenkins.url' in {default_config_path()}, or pass --url"
         )
     if not user:
         fail(
-            "set 'user' in the Jenkins helper config file, set JENKINS_USER, or pass --user"
+            f"set 'jenkins.user' in {default_config_path()}, or pass --user"
         )
     if not token:
         fail(
-            "set 'token' in the Jenkins helper config file, set JENKINS_TOKEN, or pass --token"
+            f"set 'jenkins.token' in {default_config_path()}, or pass --token"
         )
     return Client(base_url=base_url.rstrip("/"), user=user, token=token)
 
@@ -648,13 +667,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--config",
         help=(
-            "Path to Jenkins helper JSON config file, "
+            "Path to shared JSON config file, "
             f"default: {default_config_path()}"
         ),
     )
-    parser.add_argument("--url", help="Base Jenkins URL, default: $JENKINS_URL")
-    parser.add_argument("--user", help="Jenkins username, default: $JENKINS_USER")
-    parser.add_argument("--token", help="Jenkins API token, default: $JENKINS_TOKEN")
+    parser.add_argument("--url", help="Base Jenkins URL, default: config jenkins.url")
+    parser.add_argument("--user", help="Jenkins username, default: config jenkins.user")
+    parser.add_argument("--token", help="Jenkins API token, default: config jenkins.token")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     branch = subparsers.add_parser("branch-builds", help="Find builds for a branch")

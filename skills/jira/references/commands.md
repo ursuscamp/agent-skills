@@ -47,15 +47,16 @@ Use the helper script in this skill to bridge that gap:
 ```bash
 python3 skills/jira/scripts/download_attachment.py ENG-123 --list
 python3 skills/jira/scripts/download_attachment.py ENG-123 --attachment-name report.pdf --output-dir /tmp/jira-downloads
-python3 skills/jira/scripts/download_attachment.py ENG-123 --attachment-id 10042 --header "Authorization: Bearer $JIRA_BEARER_TOKEN"
-python3 skills/jira/scripts/download_attachment.py ENG-123 --attachment-id 10042 --basic-user user@example.com --basic-token "$JIRA_API_TOKEN"
+python3 skills/jira/scripts/download_attachment.py ENG-123 --attachment-id 10042 --header "Authorization: Bearer ..."
+python3 skills/jira/scripts/download_attachment.py ENG-123 --attachment-id 10042 --basic-user user@example.com --basic-token secret
 ```
 
 Notes:
 
 - The script calls `jira issue view ISSUE-KEY --raw` unless `--metadata-file` is supplied.
 - If the issue has multiple attachments, pass `--attachment-name` or `--attachment-id`.
-- The script auto-uses `JIRA_BEARER_TOKEN` when set, or `JIRA_API_TOKEN` plus `login` from the Jira CLI config when `auth_type: basic`.
+- The script auto-uses `~/.config/agent-skills/config.json` when it contains `jira.bearer_token` or `jira.basic_user` plus `jira.basic_token`.
+- Keep task defaults there too, such as `jira.project` and `jira.output_dir`.
 - If attachment downloads return HTTP 401 or 403, retry with explicit auth headers or cookies.
 
 ## Create and update

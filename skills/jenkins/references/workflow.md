@@ -4,11 +4,11 @@ Use this reference when you need the details behind the skill's helper script or
 
 ## Authentication
 
-The helper script reads a JSON config file first, then falls back to CLI flags and environment variables.
+The helper script reads a shared JSON config file first, then falls back to CLI flags.
 
 Default config path:
 
-- `~/.config/jenkins-helper/config.json`
+- `~/.config/agent-skills/config.json`
 
 Override it with:
 
@@ -18,17 +18,19 @@ Expected JSON shape:
 
 ```json
 {
-  "url": "https://jenkins.example.com",
-  "user": "your-user",
-  "token": "your-api-token"
+  "jenkins": {
+    "url": "https://jenkins.example.com",
+    "user": "your-user",
+    "token": "your-api-token"
+  }
 }
 ```
 
 Override precedence is:
 
 1. `--url`, `--user`, `--token`
-2. Config file fields: `url`, `user`, `token`
-3. Environment variables: `JENKINS_URL`, `JENKINS_USER`, `JENKINS_TOKEN`
+2. Config file fields: `jenkins.url`, `jenkins.user`, `jenkins.token`
+3. Top-level config fields: `url`, `user`, `token`
 
 It uses HTTP basic auth and will attempt to fetch a CSRF crumb from `/crumbIssuer/api/json` before POST requests. If the crumb endpoint is unavailable, it falls back to a plain POST because some Jenkins instances do not require crumbs for API-token-authenticated requests.
 

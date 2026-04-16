@@ -21,6 +21,38 @@ You can override the target location with:
 
 The script also removes installed skills that no longer exist in the source tree, and it prunes skills that are on that target's ignore list, so the destination stays in sync.
 
+## Shared config
+
+Some skill scripts read a shared JSON config file for non-interactive defaults and secrets:
+
+- `~/.config/agent-skills/config.json`
+
+This file lives on your machine, outside the repo, so `install-skills` will not create or sync it.
+
+Use sections to keep values organized by skill:
+
+```json
+{
+  "jenkins": {
+    "url": "https://jenkins.example.com",
+    "user": "your-user",
+    "token": "your-api-token"
+  },
+  "jira": {
+    "bearer_token": "your-bearer-token",
+    "basic_user": "user@example.com",
+    "basic_token": "your-api-token",
+    "project": "ENG",
+    "output_dir": "/tmp/jira-downloads"
+  },
+  "defaults": {
+    "output_dir": "/tmp/shared-downloads"
+  }
+}
+```
+
+Scripts read their skill section first, then `defaults`, then top-level keys. That keeps one file usable across skills without forcing every script to share the same schema.
+
 ## Usage
 
 ```bash
@@ -41,9 +73,9 @@ Use `--watch` when you want to keep watching for changes and resync automaticall
 
 ## Current skills
 
-- [`jira`](./skills/jira/SKILL.md) - Jira workflows via the local `jira` CLI, including issue search, editing, comments, and sprint/epic operations
+- [`jira`](./skills/jira/SKILL.md) - Jira workflows via the local `jira` CLI, including issue search, editing, comments, sprint/epic operations, and attachment downloads with shared config
 - [`github`](./skills/github/SKILL.md) - GitHub workflows via the local `gh` CLI, including auth, repo targeting, issues, pull requests, workflows, releases, and API calls
-- [`jenkins`](./skills/jenkins/SKILL.md) - Jenkins workflows for branch-aware build lookup, failure and test inspection, console troubleshooting, and triggering parameterized builds
+- [`jenkins`](./skills/jenkins/SKILL.md) - Jenkins workflows for branch-aware build lookup, failure and test inspection, console troubleshooting, and triggering parameterized builds from shared config
 - [`spec-dev`](./skills/spec-dev/SKILL.md) - staged spec-driven development workflow for features and bugs, starting with an interrogation phase
 - [`neovim-plugin-dev`](./skills/neovim-plugin-dev/SKILL.md) - Neovim expertise and plugin development workflow with cached local help docs
 - [`playwright`](./skills/playwright/SKILL.md) - browser automation workflow for the Playwright coding-agent CLI, including snapshots, sessions, captures, and advanced debugging
