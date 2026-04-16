@@ -7,12 +7,7 @@ description: Use when working with Jira through the local `jira` command line to
 
 Use this skill to ground Jira work in the locally installed CLI instead of guessing command syntax.
 
-Start by checking the exact command surface in the current environment:
-
-```bash
-jira --help
-jira issue --help
-```
+Start with the documented read path for the task, and only check `--help` when you need an unfamiliar flag or the installed CLI seems different from the examples here.
 
 Prefer read-only discovery first, then write operations only after the user clearly asks for them.
 
@@ -28,7 +23,7 @@ Prefer read-only discovery first, then write operations only after the user clea
 
 - Prefer explicit project scoping with `-p <PROJECT>` when the task mentions a project or when multiple projects may be configured.
 - Prefer non-interactive flags such as `--no-input`, `--plain`, `--no-headers`, and `--raw` when you need deterministic output or are driving the CLI from an automated workflow.
-- Check `jira <command> <subcommand> --help` before using less common flags instead of relying on memory.
+- Check `jira <command> <subcommand> --help` before using less common flags or when the installed CLI appears to differ from the examples here.
 - Summarize the planned mutation before running create, edit, move, comment, sprint-add, epic-add, or worklog commands unless the user already asked for that exact action.
 - When the user asks for "today", "this week", or similar relative periods, translate that into the CLI's supported date filters or use exact dates when that avoids ambiguity.
 
