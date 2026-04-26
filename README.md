@@ -79,6 +79,7 @@ Use `--watch` when you want to keep watching for changes and resync automaticall
 - [`spec-dev`](./skills/spec-dev/SKILL.md) - staged spec-driven development workflow for features and bugs, starting with an interrogation phase
 - [`neovim-plugin-dev`](./skills/neovim-plugin-dev/SKILL.md) - Neovim expertise and plugin development workflow with cached local help docs
 - [`playwright`](./skills/playwright/SKILL.md) - browser automation workflow for the Playwright coding-agent CLI, including snapshots, sessions, captures, and advanced debugging
+- [`web-search`](./skills/web-search/SKILL.md) - live web search and page fetch workflow via Exa's hosted MCP server using `npx mcporter` (`web_search_exa`, `web_fetch_exa`)
 
 ## Adding a new skill
 
