@@ -75,11 +75,15 @@ Use `--watch` when you want to keep watching for changes and resync automaticall
 
 - [`jira`](./skills/jira/SKILL.md) - Jira workflows via the local `jira` CLI, including issue search, editing, comments, sprint/epic operations, and attachment downloads with shared config
 - [`github`](./skills/github/SKILL.md) - GitHub workflows via the local `gh` CLI, including auth, repo targeting, issues, pull requests, workflows, releases, and API calls
+- [`interrogate`](./skills/interrogate/SKILL.md) - alignment-first software development intake workflow that explores the codebase first and asks one question at a time until the request is clear
 - [`jenkins`](./skills/jenkins/SKILL.md) - Jenkins workflows for branch-aware build lookup, failure and test inspection, console troubleshooting, and triggering parameterized builds from shared config
-- [`spec-dev`](./skills/spec-dev/SKILL.md) - staged spec-driven development workflow for features and bugs, starting with an interrogation phase
 - [`neovim-plugin-dev`](./skills/neovim-plugin-dev/SKILL.md) - Neovim expertise and plugin development workflow with cached local help docs
 - [`playwright`](./skills/playwright/SKILL.md) - browser automation workflow for the Playwright coding-agent CLI, including snapshots, sessions, captures, and advanced debugging
 - [`web-search`](./skills/web-search/SKILL.md) - live web search and page fetch workflow via Exa's hosted MCP server using `npx mcporter` (`web_search_exa`, `web_fetch_exa`)
+
+## Archived skills
+
+- [`spec-dev`](./archive/spec-dev/SKILL.md) - archived staged spec-driven development workflow kept for reference only
 
 ## Adding a new skill
 
